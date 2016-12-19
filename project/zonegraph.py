@@ -57,7 +57,6 @@ def getzones(context, beginzone, template, ceil):
 					#if targetzone not in hasfound:
 					needtofind.append(targetzone)
 	return hasfound
-			
 
 def main():
 	start = time.clock()
