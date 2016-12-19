@@ -53,11 +53,12 @@ def getzones(context, beginzone, template, ceil):
 								targetfed = targetfed.up()
 							targetfed = targetfed.extrapolateMaxBounds(ceil)
 							#print targetfed
-					targetzone = Zone(targetlocation, targetfed)
-					#if targetzone not in hasfound:
-					needtofind.append(targetzone)
+					if not targetfed.isEmpty() :
+						targetzone = Zone(targetlocation, targetfed)
+						#if targetzone not in hasfound:
+						needtofind.append(targetzone)
 	return hasfound
-
+"""
 def main():
 	start = time.clock()
 	ntaxml = init(sys.argv[1])
@@ -74,3 +75,4 @@ def main():
 	
 if __name__=='__main__':
 	main()
+"""
