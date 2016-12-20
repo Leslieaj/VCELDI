@@ -46,6 +46,18 @@ class Transition:
 		self.assignment = assignment
 	def gettransition(self):
 		return [self.id, self.source, self.target, self.guard, self.assignment]
+		
+class Nexttransitions:
+	def __init__(self, locationid, template):
+		self.location = locationid
+		self.next = self.initNexttransition(template) or []
+
+	def initNexttransition(self, template):
+		nexttr = {}
+		for tr in template.transitions:
+			if tr.source == self.location:
+					nexttr[tr.id] = False
+		return nexttr
 
 def init(xmlfile):
 	tree = ET.parse(xmlfile)
@@ -56,6 +68,7 @@ def parseXML(root):
 	declaration = root.findtext('declaration') or ""
 	system = root.findtext('system') or ""
 	templates = []
+	transitionid = 0
 	for templatexml in root.getiterator("template"):
 		declaration = templatexml.findtext("declaration") or ""
 		locations = []
@@ -70,7 +83,8 @@ def parseXML(root):
 		for transitionxml in templatexml.getiterator("transition"):
 			sourceL = transitionxml.find('source').get('ref')
 			targetL = transitionxml.find('target').get('ref')
-			transition = Transition(len(transitions),sourceL,targetL,)
+			transition = Transition(transitionid,sourceL,targetL,)
+			transitionid = transitionid + 1
 			for labelxml in transitionxml.getiterator("label"):
 				"""if labelxml.get('kind') in ['guard','assignment']
 					label = getattr(transition, labelxml.get('kind'))
@@ -91,16 +105,20 @@ def parseXML(root):
 		templates += [template]
 	return templates
 
-
 def main():
 	ntaxml = init(sys.argv[1])
 	templates = parseXML(ntaxml)
+	next = []
 	for t in iter(templates):
 		print t.name, t.declaration
 		for l in t.locations:
+			next+=[Nexttransitions(l.id, t)]
 			print l.getlocation()
 		for tr in t.transitions:
 			print tr.gettransition()
+
+	for i in next:
+		print i.location, i.next.items()
 
 if __name__=='__main__':
 	main()

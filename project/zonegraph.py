@@ -17,12 +17,15 @@ class Zone:
 def getzones(context, beginzone, template, ceil):
 	needtofind = []
 	hasfound = []
+	enterpoint = []
 	begin = beginzone
+	enterpoint.append(Zone(begin.location,begin.federation))
 	for location in template.locations:
 		if location.init == True :
 			if location.id == begin.location:
 				if location.invariant != None:
 					begin.federation = begin.federation.up() & invarianttofed(context, location.invariant)
+					begin.federation = assignmenttofed(context, 't=0', begin.federation)
 				else:
 					begin.federation = begin.federation.up()
 			else:
@@ -44,35 +47,41 @@ def getzones(context, beginzone, template, ceil):
 					if tran.assignment != None:
 						targetfed = assignmenttofed(context, tran.assignment, targetfed)
 					targetlocation = tran.target
+					if not targetfed.isEmpty() :
+						targetfed = assignmenttofed(context, 't=0', targetfed)
+						targetfed = targetfed.extrapolateMaxBounds(ceil)
+						enterzone = Zone(targetlocation, targetfed)
+						if enterzone not in enterpoint:
+							enterpoint.append(enterzone)
 					for location in template.locations:
 						if targetlocation == location.id:
 							if location.invariant != None:
 								targetfed = targetfed.up() & invarianttofed(context, location.invariant)
-								#print targetfed
 							else:
 								targetfed = targetfed.up()
 							targetfed = targetfed.extrapolateMaxBounds(ceil)
-							#print targetfed
 					if not targetfed.isEmpty() :
+						targetfed = assignmenttofed(context, 't=0', targetfed)
 						targetzone = Zone(targetlocation, targetfed)
-						#if targetzone not in hasfound:
 						needtofind.append(targetzone)
-	return hasfound
-"""
+	return hasfound, enterpoint
+
 def main():
 	start = time.clock()
 	ntaxml = init(sys.argv[1])
 	templates = parseXML(ntaxml)
-	v = Context(['x', 'y'], 'v')
-	ceil={v.x:10,v.y:20}
+	v = Context(['x', 'y', 't'], 'v')
+	ceil={v.x:10,v.y:20, v.t:100}
 	bgf = v.getZeroFederation()
 	beginzone =  Zone('id2', bgf)
-	zones = getzones(v,beginzone,templates[0],ceil)
+	zones,enter = getzones(v,beginzone,templates[0],ceil)
 	end = time.clock()
 	print end-start
 	for i in iter(zones):
 		print i.location, i.federation
+	for j in iter(enter):
+		print j.location, j.federation
 	
 if __name__=='__main__':
 	main()
-"""
+
