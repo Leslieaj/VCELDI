@@ -1,15 +1,20 @@
 from zonegraph import *
 
 class Observationinterval:
-	def __init__(self, lower_bound, upper_bound):
+	def __init__(self, lower_bound, upper_bound, context):
 		self.lb = lower_bound
 		self.ub = upper_bound
+		self.context = context
 	def getlb(self):
 		return self.lb
 	def getub(self):
 		return self.ub
+	def getlow(self):
+		return guardtofed(self.context, 't<'+str(self.lb))
+	def getup(self):
+		return guardtofed(self.context, 't>'+str(self.ub))
 	def getOInterval(self):
-		return 't>=' + str(self.lb) + '&&' + 't<=' + str(self.ub) 
+		return guardtofed(self.context, 't>=' + str(self.lb) + '&&' + 't<=' + str(self.ub))
 
 class PLocation:
 	def __init__(self, location, index, federation):
@@ -53,9 +58,17 @@ def findlocationbyid(id, locations):
 			return l
 	return None
 
-def ointervalfed(context, ointerval):
-	interval = ointerval.getOInterval()
-	return guardtofed(context, interval)
+def lessthanlb(fed,lowfed):
+	temp = fed & lowfed
+	return not temp.isEmpty()
+
+def greaterthanub(fed, upfed):
+	temp = fed & upfed
+	return not temp.isEmpty()
+	
+def inintarval(fed, intervalfed):
+	temp = fed & interval
+	return not temp.isEmpty()
 
 def findpath(zone, ointerval, template):
 	initzone = zone
@@ -65,7 +78,7 @@ def findpath(zone, ointerval, template):
 	plocation = PLocation(location, len(ppath.path), initzone.federation)
 	#plocation.getplocation()
 	if plocation.invariant == None:
-		tempfed = plocation.federation.up() & ointerval
+		tempfed = plocation.federation.up() & ointerval.getOInterval()
 		if not tempfed.isEmpty():
 			plocation.federation = plocation.federation.up()
 			plocation.index = plocation.index + 1
@@ -84,8 +97,8 @@ def main():
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
 	#end = time.clock()
 	#print end-start
-	observationinterval = Observationinterval(3,3)
-	ointerval = ointervalfed(v,observationinterval)
+	ointerval = Observationinterval(3,3,v)
+	#ointerval = ointervalfed(v,observationinterval)
 	findpath(enter[0], ointerval,templates[0])
 	
 if __name__=='__main__':
