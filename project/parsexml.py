@@ -74,7 +74,7 @@ def parseXML(root):
 	declaration = root.findtext('declaration') or ""
 	system = root.findtext('system') or ""
 	templates = []
-	transitionid = 0
+	transitionid = 1
 	for templatexml in root.getiterator("template"):
 		declaration = templatexml.findtext("declaration") or ""
 		transitions = []
