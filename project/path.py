@@ -34,13 +34,13 @@ class PLocation:
 	#if there is an out transition has not been selected, return the tansition id, 
 	#	else, means all out transitions of the location have selected, return False.
 	def hasnexttran(self):
-		for tranid, hasselected in next:
+		for tranid, hasselected in self.next.items():
 			if hasselected == False :
 				return tranid
 		return False
 	def selecttran(self,tranid):
-		if tranid in next.keys():
-			next[tranid] = True
+		if tranid in self.next.keys():
+			self.next[tranid] = True
 	def getplocation(self):
 		print self.id,self.index, self.invariant, self.federation, self.next
 		
@@ -66,26 +66,68 @@ def greaterthanub(fed, upfed):
 	temp = fed & upfed
 	return not temp.isEmpty()
 	
-def inintarval(fed, intervalfed):
-	temp = fed & interval
+def ininterval(fed, intervalfed):
+	temp = fed & intervalfed
 	return not temp.isEmpty()
+	
+def forward(plocation, transitions, context):
+	targetzone = None
+	if plocation.hasnexttran():
+		tranid = plocation.hasnexttran()
+		plocation.selecttran(tranid)
+		for tran in transitions:
+			if tran.id == tranid:
+				targetlocation = tran.target
+				targetfed = None
+				if tran.guard != None:
+					targetfed = plocation.federation & guardtofed(context, tran.guard)
+				else:
+					targetfed = plocation.federation 
+				if tran.assignment != None:
+					targetfed = assignmenttofed(context, tran.assignment, targetfed)
+				targetzone = Zone(targetlocation, targetfed)
+	return targetzone
 
-def findpath(zone, ointerval, template):
-	initzone = zone
-	paths = []
-	ppath = Potentialpath(initzone)
-	location = findlocationbyid(initzone.location, template.locations)
-	plocation = PLocation(location, len(ppath.path), initzone.federation)
-	#plocation.getplocation()
+def backward(ppath, transitions, context):
+	forward(ppath[-1], transitions, context)
+	
+def copypathsequence(ppath):
+	sequence = []
+	sequence.append(ppath.initzone)
+	for pl in ppath.path:
+		sequence.append({pl.index:pl.id})
+	return sequence
+	
+def stayinlocation(plocation, context):
+	tempfed = plocation.federation
 	if plocation.invariant == None:
-		tempfed = plocation.federation.up() & ointerval.getOInterval()
-		if not tempfed.isEmpty():
-			plocation.federation = plocation.federation.up()
-			plocation.index = plocation.index + 1
-			ppath.addPlocation(plocation)
+		tempfed = plocation.federation.up()
+	else :
+		tempfed = plocation.federation.up() & invarianttofed(context, plocation.invariant)
+	return tempfed
+	
+def findpath(zone, ointerval, template):
+	#initzone = zone
+	paths = []
+	ppath = Potentialpath(zone)
+	location = findlocationbyid(zone.location, template.locations)
+	plocation = PLocation(location, len(ppath.path), zone.federation)
+	#plocation.getplocation()
+	tempfed = stayinlocation(plocation, ointerval.context)
+	isininterval = ininterval(tempfed, ointerval.getOInterval())
+	islesslb = lessthanlb(tempfed,ointerval.getlow())
+	isgreaterub = greaterthanub(tempfed,ointerval.getup())
+	if isininterval:
+		plocation.federation = plocation.federation.up()
+		plocation.index = plocation.index + 1
+		ppath.addPlocation(plocation)
+		paths.append(copypathsequence(ppath))
+	#ppath.path[0].getplocation()
+	newzone = forward(plocation, template.transitions, ointerval.context)
 	ppath.path[0].getplocation()
-
-
+	print newzone.location, newzone.federation
+	print paths[0][0].location,paths[0][0].federation, paths[0][1].items()
+	
 def main():
 	#start = time.clock()
 	ntaxml = init(sys.argv[1])
