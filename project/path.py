@@ -51,6 +51,24 @@ class Potentialpath:
 	def addPlocation(self, plocation):
 		self.path.append(plocation)
 
+class Symboliclocation:
+	def __init__(self, index, locationid, federation):
+		self.index = index
+		self.location = locationid
+		self.federation = federation
+		self.valuesymbol = self.getsymbol(self.index)
+	def getsymbol(self, index):
+		return 't_'+ str(self.index)
+	def getfedstr(self, federation):
+		return str(self.federation)
+	def getsl(self):
+		return [self.index, self.location, self.valuesymbol, str(self.federation)]
+
+class Symbolicpath:
+	def __init__(self, initzone, sequence):
+		self.initzone = initzone
+		self.path = sequence[:]
+
 def findlocationbyid(id, locations):
 	for l in locations:
 		if id == l.id:
@@ -106,11 +124,14 @@ def backward(ppath, transitions, context):
 	
 def copypathsequence(ppath):
 	sequence = []
-	sequence.append(ppath.initzone)
+	#sequence.append(ppath.initzone)
 	for pl in ppath.path:
-		sequence.append({pl.index:pl.id})
-	return sequence
-	
+		sl = Symboliclocation(pl.index, pl.id, pl.federation)
+		sequence.append(sl)
+	sp = Symbolicpath(ppath.initzone, sequence)
+	#return sequence
+	return sp
+
 def stayinlocation(plocation, context):
 	tempfed = plocation.federation
 	if plocation.invariant == None:
@@ -148,20 +169,20 @@ def findpath(ppath, zone, ointerval, template, paths):
 		paths.append(copypathsequence(ppath))
 		newzone = forward(ppath, plocation, template.transitions, ointerval.context)
 		findpath(ppath, newzone, ointerval, template, paths)
-		return
+		#return
 	elif islesslb:
 		plocation.federation = stayinlocation(plocation, ointerval.context)
 		plocation.index = plocation.index + 1
 		ppath.addPlocation(plocation)
 		newzone = forward(ppath, plocation, template.transitions, ointerval.context)
 		findpath(ppath, newzone, ointerval, template, paths)
-		return
+		#return
 	elif isgreaterub:
 		newzone = backward(ppath, template.transitions, ointerval.context)
 		findpath(ppath, newzone, ointerval, template, paths)
-		return
+		#return
 	return
-	
+
 def main():
 	start = time.clock()
 	ntaxml = init(sys.argv[1])
@@ -177,13 +198,11 @@ def main():
 	print end-start
 	pathnum = 0
 	for pps in allpaths:
-		for ps in pps:
+		for sp in pps:
 			pathnum = pathnum + 1
-			for p in range(0, len(ps)):
-				if p == 0:
-					print ps[0].location, ps[0].federation
-				else:
-					print ps[p].items()
+			print sp.initzone.location, sp.initzone.federation
+			for sl in sp.path:
+				print sl.getsl()
 	print pathnum
 	
 if __name__=='__main__':
