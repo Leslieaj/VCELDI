@@ -150,8 +150,9 @@ def findpath(ppath, zone, ointerval, template, paths):
 		findpath(ppath, newzone, ointerval, template, paths)
 		return
 	elif islesslb:
-		plocation.federation = plocation.federation.up()
+		plocation.federation = stayinlocation(plocation, ointerval.context)
 		plocation.index = plocation.index + 1
+		ppath.addPlocation(plocation)
 		newzone = forward(ppath, plocation, template.transitions, ointerval.context)
 		findpath(ppath, newzone, ointerval, template, paths)
 		return
@@ -170,7 +171,7 @@ def main():
 	bgf = v.getZeroFederation()
 	beginzone =  Zone('id2', bgf)
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
-	ointerval = Observationinterval(10,30,v)
+	ointerval = Observationinterval(20,30,v)
 	allpaths = findallpath(enter,ointerval,templates[0])
 	end = time.clock()
 	print end-start
