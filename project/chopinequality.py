@@ -12,7 +12,7 @@ def chopcondition(spath, chopnum, ldis):
 		LDFsineqs = Ldfinequations(chopcond, spath.path, ldis)
 		TDineqs = TDinequations(chopcond)
 		ADDineqs = ADDinequations(chopcond)
-		conditionineqs.append(LDFsineqs+' and '+TDineqs+' and '+ADDineqs)
+		conditionineqs.append('('+LDFsineqs+' and '+TDineqs+' and '+ADDineqs+')')
 	for ineqs in conditionineqs:
 		if ineqs != conditionineqs[-1]:
 			ineqsstr = ineqsstr + ineqs + ' or '
@@ -35,6 +35,32 @@ def splitpath(chopcond, path):
 	fragments.append(path[choptemp-1:])
 	return fragments
 
+def TDinequations(chopcond):
+	td = []
+	tdineqs = ''
+	for i, chop in zip(range(0,len(chopcond)), chopcond):
+		temp = '0<='+'m_'+str(i)+'<='+'t'+str(chop)
+		td.append(temp)
+	for ineqs in td:
+		if ineqs != td[-1]:
+			tdineqs = tdineqs + ineqs + ' and '
+		else:
+			tdineqs = tdineqs + ineqs
+	return tdineqs
+	
+def ADDinequations(chopcond):
+	add = []
+	addineqs = ''
+	for i in range(1, len(chopcond)):
+		if chopcond[i] == chopcond[i-1]:
+			temp = '('+'m_'+str(i-1)+'<='+'m_'+str(i)+')'
+			add.appedn(temp)
+	for ineqs in add:
+		if ineqs != add[-1]:
+			addineqs = addineqs + ineqs + ' and '
+		else:
+			addineqs = addineqs + ineqs
+	return addineqs
 
 k=0
 
