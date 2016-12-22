@@ -70,8 +70,7 @@ def ininterval(fed, intervalfed):
 	temp = fed & intervalfed
 	return not temp.isEmpty()
 	
-def forward(plocation, transitions, context):
-	#print plocation.hasnexttran()
+def forward(ppath, plocation, transitions, context):
 	targetzone = None
 	if plocation.hasnexttran():
 		tranid = plocation.hasnexttran()
@@ -79,7 +78,6 @@ def forward(plocation, transitions, context):
 		for tran in transitions:
 			if tran.id == tranid:
 				targetlocation = tran.target
-				#print targetlocation
 				targetfed = None
 				if tran.guard != None:
 					targetfed = plocation.federation & guardtofed(context, tran.guard)
@@ -89,20 +87,22 @@ def forward(plocation, transitions, context):
 					targetfed = assignmenttofed(context, tran.assignment, targetfed)
 				if not targetfed.isEmpty() :
 					targetzone = Zone(targetlocation, targetfed)
-					#print targetzone.location, targetzone.federation
 				else:
-					targetzone = forward(plocation, transitions, context)
-
+					targetzone = forward(ppath, plocation, transitions, context)
+	else:
+		targetzone = backward(ppath, transitions, context)
 	return targetzone
 
 def backward(ppath, transitions, context):
 	if len(ppath.path)==0:
 		return None
-	newzone = forward(ppath.path[-1], transitions, context)
-	if newzone is None:
-		del ppath.path[-1]
-		return backward(ppath,transitions, context)
-	return newzone
+
+	del ppath.path[-1]
+
+	if len(ppath.path)==0:
+		return None
+	else:
+		return forward(ppath, ppath.path[-1], transitions, context)
 	
 def copypathsequence(ppath):
 	sequence = []
@@ -130,40 +130,33 @@ def findallpath(enter, ointerval, template):
 
 def findpath(ppath, zone, ointerval, template, paths):
 	initzone = zone
-	#ppath = Potentialpath(zone)
 	if initzone is None :
 		return
+
 	location = findlocationbyid(initzone.location, template.locations)
 	plocation = PLocation(location, len(ppath.path), initzone.federation)
-	#plocation.getplocation()
+
 	tempfed = stayinlocation(plocation, ointerval.context)
-	#print tempfed
 	isininterval = ininterval(tempfed, ointerval.getOInterval())
 	islesslb = lessthanlb(tempfed,ointerval.getlow())
 	isgreaterub = greaterthanub(tempfed,ointerval.getup())
-	#if len(ppath.path)==0:
-		#return
+
 	if isininterval:
 		plocation.federation = stayinlocation(plocation, ointerval.context)
-		#print plocation.federation
 		plocation.index = plocation.index + 1
 		ppath.addPlocation(plocation)
 		paths.append(copypathsequence(ppath))
-		#print plocation.federation
-		newzone = forward(plocation, template.transitions, ointerval.context)
-		#print newzone.federation
+		newzone = forward(ppath, plocation, template.transitions, ointerval.context)
 		findpath(ppath, newzone, ointerval, template, paths)
 		return
 	elif islesslb:
 		plocation.federation = plocation.federation.up()
 		plocation.index = plocation.index + 1
-		newzone = forward(plocation, template.transitions, ointerval.context)
+		newzone = forward(ppath, plocation, template.transitions, ointerval.context)
 		findpath(ppath, newzone, ointerval, template, paths)
 		return
 	elif isgreaterub:
 		newzone = backward(ppath, template.transitions, ointerval.context)
-		if newzone is None:
-			return
 		findpath(ppath, newzone, ointerval, template, paths)
 		return
 	return
@@ -177,7 +170,7 @@ def main():
 	bgf = v.getZeroFederation()
 	beginzone =  Zone('id2', bgf)
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
-	ointerval = Observationinterval(10,10,v)
+	ointerval = Observationinterval(10,30,v)
 	allpaths = findallpath(enter,ointerval,templates[0])
 	end = time.clock()
 	print end-start
