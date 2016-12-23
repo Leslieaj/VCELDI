@@ -15,7 +15,7 @@ clock x,y;</declaration>
 		</location>
 		<location id="id2" x="-187" y="-85">
 			<name x="-197" y="-119">A</name>
-			<label kind="invariant" x="-197" y="-68">x&lt;=9</label>
+			<label kind="invariant" x="-197" y="-68">y&lt;=10</label>
 		</location>
 		<init ref="id2"/>
 		<transition>
@@ -35,8 +35,8 @@ clock x,y;</declaration>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id1"/>
-			<label kind="guard" x="-169" y="-119">x&gt;=5</label>
-			<label kind="assignment" x="-144" y="-85">x=0,y=0</label>
+			<label kind="guard" x="-169" y="-119">y&gt;=5</label>
+			<label kind="assignment" x="-144" y="-85">y=0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
