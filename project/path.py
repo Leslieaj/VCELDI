@@ -1,4 +1,5 @@
 from zonegraph import *
+from floyds import *
 
 class Observationinterval:
 	def __init__(self, lower_bound, upper_bound, context):
@@ -112,7 +113,7 @@ def forward(ppath, plocation, transitions, context):
 	return targetzone
 
 def backward(ppath, transitions, context):
-	if len(ppath.path)==0:
+	if len(ppath.path)==1:
 		return None
 
 	del ppath.path[-1]
@@ -145,10 +146,53 @@ def findallpath(enter, ointerval, template):
 	for z in enter:
 		paths = []
 		ppath = Potentialpath(z)
+		"""nextzone, newointerval = dealwithfirstlocation(ppath, ppath.initzone, ointerval, template, paths)
+		if len(nextzone)==0:
+			findpath(ppath, None, newointerval,template, paths)
+		else:
+			for zone in nextzone:
+				findpath(ppath, zone, newointerval,template, paths)"""
 		findpath(ppath, ppath.initzone, ointerval,template, paths)
 		allpaths += [paths]
 	return allpaths
 
+def dealwithfirstlocation(ppath, initzone, ointerval, template, paths):
+	location = findlocationbyid(initzone.location, template.locations)
+	plocation = PLocation(location, len(ppath.path), initzone.federation)
+	plocation.federation = stayinlocation(plocation, ointerval.context)
+	plocation.index = plocation.index + 1
+	ppath.addPlocation(plocation)
+	dbm = fedstrtodbm(str(plocation.federation), ointerval.context)
+	floyds(dbm)
+	tup = dbm[len(ointerval.context.clocks)][0].value
+	newtlow = ointerval.getlb()
+	if newtlow - tup <= 0:
+		newtlow = 0
+		paths.append(copypathsequence(ppath))
+	else:
+		newtlow = newtlow - tup
+	print newtlow
+	newointerval = Observationinterval(newtlow,ointerval.getub(),ointerval.context)
+	nextzone = []
+	while plocation.hasnexttran():
+		tranid = plocation.hasnexttran()
+		plocation.selecttran(tranid)
+		for tran in template.transitions:
+			if tran.id == tranid:
+				targetlocation = tran.target
+				targetfed = None
+				if tran.guard != None:
+					targetfed = plocation.federation & guardtofed(ointerval.context, tran.guard)
+				else:
+					targetfed = plocation.federation 
+				if tran.assignment != None:
+					targetfed = assignmenttofed(ointerval.context, tran.assignment, targetfed)
+				if not targetfed.isEmpty() :
+					targetzone = Zone(targetlocation, targetfed)
+					nextzone.append(targetzone)
+	return nextzone, newointerval
+	
+	
 def findpath(ppath, zone, ointerval, template, paths):
 	initzone = zone
 	if initzone is None :
