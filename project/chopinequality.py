@@ -1,6 +1,13 @@
 from parseeldi import *
 from path import Symbolicpath, Symboliclocation
 
+def buildexist(chopnum, chopineqsstr):
+	tau = ''
+	for i in range(1, chopnum+1):
+		tau = tau + ('m_'+str(i)) + ','
+	tau = '{' + tau[:-1] + '}'
+	return 'ex(' + tau + ', ' + '('+ chopineqsstr + ')'+')'
+
 def chopcondition(spath, chopnum, ldis):
 	pathlen = len(spath.path)
 	cctemp = []
@@ -20,9 +27,9 @@ def chopcondition(spath, chopnum, ldis):
 			ineqsstr = ineqsstr + ineqs
 	return ineqsstr
 
-def Ldfinequations(chopcond, path, ldis):
+"""def Ldfinequations(chopcond, path, ldis):
 	fragments = splitpath(chopcond, path)
-	for frag, ldi in zip(fragments, ldis):
+	for frag, ldi in zip(fragments, ldis):"""
 		
 	
 def splitpath(chopcond, path):
@@ -92,9 +99,9 @@ def main():
 	chopnum = 3
 	pathlen = 4
 	chopindex = []
-	locatechops(chopnum,pathlen,chopindex)
-
-	print k
+	#locatechops(chopnum,pathlen,chopindex)
+	#print k
+	print buildexist(chopnum, '(kkkk) or (bbbb)')
 
 if __name__=='__main__':
 	main()
