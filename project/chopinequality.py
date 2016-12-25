@@ -20,11 +20,10 @@ def chopcondition(spath, chopnum, ldis):
 		TDineqs = TDinequations(chopcond)
 		ADDineqs = ADDinequations(chopcond)
 		conditionineqs.append('('+LDFsineqs+' and '+TDineqs+' and '+ADDineqs+')')
-	for ineqs in conditionineqs:
-		if ineqs != conditionineqs[-1]:
+	for i, ineqs in zip(range(0, len(conditionineqs)), conditionineqs):
+		if i != len(conditionineqs)-1:
 			ineqsstr = ineqsstr + ineqs + ' or '
-		else:
-			ineqsstr = ineqsstr + ineqs
+		ineqsstr = ineqsstr + ineqs
 	return ineqsstr
 
 def Ldfinequations(chopcond, path, ldis):
@@ -37,34 +36,66 @@ def Ldfinequations(chopcond, path, ldis):
 				tempcl = Coefficientlocation(cl.coefficient, cl.location)
 				symbolcls.append(tempcl)
 			for symbolcl in symbolcls:
-				for slocation in fragments[0]:
+				for slocation in fragments[i]:
 					if slocation.location == symbolcl.location:
 						if slocation.index != chopcond[i]:
 							symbolcl.adddvalue(slocation.getsymbol())
 						else:
 							symbolcl.adddvalue('m_'+str(i+1))
-			ldfineqs.append(ldftoineq(symbolcls))
-		if i > 0 and i < len(fragments)-1:
+			ldfineqs.append(ldftoineq(symbolcls, ldi.bound))
+		elif i > 0 and i < len(fragments)-1:
 			symbolcls = []
 			for cl in ldi.coefficientlocations:
 				tempcl = Coefficientlocation(cl.coefficient, cl.location)
 				symbolcls.append(tempcl)
 			if chopcond[i] == chopcond[i-1]:
 				for symbolcl in symbolcls:
-					for slocation in fragments[0]:
+					for slocation in fragments[i]:
 						if slocation.location == symbolcl.location:
 							symbolcl.adddvalue('m_'+str(i+1)+'-'+'m_'+str(i))
-				ldfineqs.append(ldftoineq(symbolcls))
 			else:
-				
-def ldftoineq(symbolcls):
+				for symbolcl in symbolcls:
+					for slocation in fragments[i]:
+						if slocation.location == symbolcl.location:
+							if slocation.index == chopcond[i-1]:
+								symbolcl.adddvalue(slocation.getsymbol()+'-'+'m_'+str(i))
+							elif slocation.index == chopcond[i]:
+								symbolcl.adddvalue('m_'+str(i+1))
+							else:
+								symbolcl.adddvalue(slocation.getsymbol())
+			ldfineqs.append(ldftoineq(symbolcls, ldi.bound))
+		else:
+			symbolcls = []
+			for cl in ldi.coefficientlocations:
+				tempcl = Coefficientlocation(cl.coefficient, cl.location)
+				symbolcls.append(tempcl)
+			for symbolcl in symbolcls:
+				for slocation in fragments[i]:
+					if slocation.location == symbolcl.location:
+						if slocation.index == chopcond[i-1]:
+							symbolcl.adddvalue(slocation.getsymbol()+'-'+'m_'+str(i))
+						else:
+							symbolcl.adddvalue(slocation.getsymbol())
+			ldfineqs.append(ldftoineq(symbolcls, ldi.bound))
+	return ldfstoineqs(ldfineqs)
+
+def ldfstoineqs(ldfineqs):
+	temp = ''
+	for i, ldefineq in zip(range(0,len(ldfineqs)), ldfineqs):
+		if i != len(ldfineqs)-1:
+			temp = temp + ldefineq + ' and '
+		temp = temp + ldefineq
+	return temp
+
+def ldftoineq(symbolcls, mbound):
 	temp=''
 	for i, symbolcl in zip(range(0,len(symbolcls)), symbolcls):
 		if symbolcl.getcodvalue() != None:
 			if i != len(symbolcls)-1:
 				temp = temp + symbolcl.getcodvalue() + '+'
-			else:
-				temp = temp + symbolcl.getcodvalue()
+			temp = temp + symbolcl.getcodvalue()
+	if temp !='':
+		temp = temp + '<=' + mbound
 	return temp
 
 def splitpath(chopcond, path):
@@ -81,13 +112,12 @@ def TDinequations(chopcond):
 	td = []
 	tdineqs = ''
 	for i, chop in zip(range(0,len(chopcond)), chopcond):
-		temp = '0<='+'m_'+str(i)+'<='+'t'+str(chop)
+		temp = '0<='+'m_'+str(i+1)+'<='+'t'+str(chop)
 		td.append(temp)
-	for ineqs in td:
-		if ineqs != td[-1]:
+	for i, ineqs in zip(range(0, len(td)), td):
+		if i != len(td)-1:
 			tdineqs = tdineqs + ineqs + ' and '
-		else:
-			tdineqs = tdineqs + ineqs
+		tdineqs = tdineqs + ineqs
 	return tdineqs
 	
 def ADDinequations(chopcond):
@@ -97,11 +127,10 @@ def ADDinequations(chopcond):
 		if chopcond[i] == chopcond[i-1]:
 			temp = '('+'m_'+str(i-1)+'<='+'m_'+str(i)+')'
 			add.appedn(temp)
-	for ineqs in add:
-		if ineqs != add[-1]:
+	for i, ineqs in zip(range(0, len(add)), add):
+		if i != len(add)-1:
 			addineqs = addineqs + ineqs + ' and '
-		else:
-			addineqs = addineqs + ineqs
+		addineqs = addineqs + ineqs
 	return addineqs
 
 k=0
