@@ -27,11 +27,46 @@ def chopcondition(spath, chopnum, ldis):
 			ineqsstr = ineqsstr + ineqs
 	return ineqsstr
 
-"""def Ldfinequations(chopcond, path, ldis):
+def Ldfinequations(chopcond, path, ldis):
 	fragments = splitpath(chopcond, path)
-	for frag, ldi in zip(fragments, ldis):"""
-		
-	
+	ldfineqs = []
+	for i, ldi in zip(range(0,len(fragments)), ldis):
+		if i == 0:
+			symbolcls = []
+			for cl in ldi.coefficientlocations:
+				tempcl = Coefficientlocation(cl.coefficient, cl.location)
+				symbolcls.append(tempcl)
+			for symbolcl in symbolcls:
+				for slocation in fragments[0]:
+					if slocation.location == symbolcl.location:
+						if slocation.index != chopcond[i]:
+							symbolcl.adddvalue(slocation.getsymbol())
+						else:
+							symbolcl.adddvalue('m_'+str(i+1))
+			ldfineqs.append(ldftoineq(symbolcls))
+		if i > 0 and i < len(fragments)-1:
+			symbolcls = []
+			for cl in ldi.coefficientlocations:
+				tempcl = Coefficientlocation(cl.coefficient, cl.location)
+				symbolcls.append(tempcl)
+			if chopcond[i] == chopcond[i-1]:
+				for symbolcl in symbolcls:
+					for slocation in fragments[0]:
+						if slocation.location == symbolcl.location:
+							symbolcl.adddvalue('m_'+str(i+1)+'-'+'m_'+str(i))
+				ldfineqs.append(ldftoineq(symbolcls))
+			else:
+				
+def ldftoineq(symbolcls):
+	temp=''
+	for i, symbolcl in zip(range(0,len(symbolcls)), symbolcls):
+		if symbolcl.getcodvalue() != None:
+			if i != len(symbolcls)-1:
+				temp = temp + symbolcl.getcodvalue() + '+'
+			else:
+				temp = temp + symbolcl.getcodvalue()
+	return temp
+
 def splitpath(chopcond, path):
 	fragments = []
 	choptemp=1

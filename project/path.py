@@ -57,10 +57,10 @@ class Symboliclocation:
 		self.index = index
 		self.location = locationid
 		self.federation = federation
-		self.valuesymbol = self.getsymbol(self.index)
-	def getsymbol(self, index):
+		self.valuesymbol = self.getsymbol()
+	def getsymbol(self):
 		return 't_'+ str(self.index)
-	def getfedstr(self, federation):
+	def getfedstr(self):
 		return str(self.federation)
 	def getsl(self):
 		return [self.index, self.location, self.valuesymbol, str(self.federation)]
