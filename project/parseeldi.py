@@ -13,7 +13,7 @@ class Coefficientlocation:
 		for i, dvaluestr in zip(range(0,len(dvalue)), dvalue):
 			if i != len(dvalue) - 1:
 				temp = temp + dvaluestr + '+'
-			else
+			else:
 				temp = temp + dvaluestr
 		return temp
 	def getcodvalue(self):
@@ -24,28 +24,51 @@ class Coefficientlocation:
 
 class Ldi:
 	def __init__(self, ldi):
-		self.ldi=ldi
-		self.coefficientlocations = getclocation(self.ldi) or []
-		self.bound = getbound(self.ldi)
-	def getbound(ldi):
-		temp = ldi.split('<=')
+		self.ldistr = ldi
+		self.coefficientlocations = self.getclocation() or []
+		self.bound = self.getbound()
+	def getbound(self):
+		temp = self.ldistr.split('<=')
 		return temp[-1]
-	def getclocation(ldi):
-		temp = ldi.split('<=')
+	def getclocation(self):
+		temp = self.ldistr.split('<=')
 		cltemps = temp[0].split('+')
 		clsequence = []
 		for cl in cltemps:
 			tempcl = cl.replace('[','').replace(']','').split(',')
 			clsequence += [Coefficientlocation(tempcl[0],tempcl[-1])]
-		
+		return clsequence
 
-		
 def parseEldi(Eldi):
 	eldi = Eldi.replace(' ','').split('#')
 	observation = eldi[0]
 	eldf = eldi[-1]
-	return observation, eldf
-	
+	operation = ';'
+	ldis = parseELDF(eldf, operation)
+	return observation, ldis
+
 def parseELDF(Eldf,operation):
-	ldis = Eldf.split(operation)
+	ldisstr = Eldf.split(operation)
+	ldis = []
+	for ldistr in ldisstr:
+		ldistr = ldistr.replace('(','').replace(')','')
+		ldis += [Ldi(ldistr)]
 	return ldis
+
+def main():
+	file_object = open('eldi.txt')
+	eldi = ''
+	try:
+		eldi = file_object.readlines()
+	finally:
+		file_object.close()
+	print eldi
+	observation, ldis = parseEldi(eldi[0].strip())
+	print observation
+	for ldi in ldis:
+		print ldi.ldistr
+		for cl in ldi.coefficientlocations:
+			print '(' + cl.coefficient + ',' + cl.location + ')'
+	
+if __name__ == '__main__':
+	main()
