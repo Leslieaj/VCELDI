@@ -146,13 +146,13 @@ def findallpath(enter, ointerval, template):
 	for z in enter:
 		paths = []
 		ppath = Potentialpath(z)
-		"""nextzone, newointerval = dealwithfirstlocation(ppath, ppath.initzone, ointerval, template, paths)
+		nextzone, newointerval = dealwithfirstlocation(ppath, ppath.initzone, ointerval, template, paths)
 		if len(nextzone)==0:
 			findpath(ppath, None, newointerval,template, paths)
 		else:
 			for zone in nextzone:
-				findpath(ppath, zone, newointerval,template, paths)"""
-		findpath(ppath, ppath.initzone, ointerval,template, paths)
+				findpath(ppath, zone, newointerval,template, paths)
+		#findpath(ppath, ppath.initzone, ointerval,template, paths)
 		allpaths += [paths]
 	return allpaths
 
@@ -187,6 +187,7 @@ def dealwithfirstlocation(ppath, initzone, ointerval, template, paths):
 					targetfed = plocation.federation 
 				if tran.assignment != None:
 					targetfed = assignmenttofed(ointerval.context, tran.assignment, targetfed)
+					targetfed = assignmenttofed(ointerval.context, 't=0', targetfed)
 				if not targetfed.isEmpty() :
 					targetzone = Zone(targetlocation, targetfed)
 					nextzone.append(targetzone)
