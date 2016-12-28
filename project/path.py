@@ -247,6 +247,7 @@ def main():
 	pathnum = 0
 	for pps in allpaths:
 		for sp in pps:
+			#print isinstance(sp, Symbolicpath)
 			pathnum = pathnum + 1
 			print sp.initzone.location, sp.initzone.federation
 			for sl in sp.path:
