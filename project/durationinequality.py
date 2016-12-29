@@ -21,7 +21,7 @@ def findtrans(transitions, path):
 
 def locationfedtoineqs(fed, paralist):
 	fedstr = str(fed).replace('(','').replace(')','').replace(' ','')
-	print fedstr
+	#print fedstr
 	for para in paralist.keys():
 		strinfo = re.compile(para)
 		fedstr = strinfo.sub('('+paralist[para]+')', fedstr)
@@ -53,9 +53,9 @@ def buildparalist(context, tran, index, paralist):
 def firstlocationineqs(fed, context):
 	paralist = {}
 	for clock in context.clocks:
-		paralist[context.name+'.'+clock.name] = clock.name + '+' + 't_1'
+		paralist[context.name+'.'+clock.name] = clock.name + '+' + 't_0'
 	ineqs = locationfedtoineqs(fed, paralist)
-	ineqs = ineqs + ' and ' + '0<=n<=t_1'
+	ineqs = ineqs + ' and ' + '0<=t_1<=t_0'
 	return ineqs, paralist
 
 def durationineqs(context, spath, transitions):
@@ -71,13 +71,48 @@ def durationineqs(context, spath, transitions):
 	newparalist = copy.deepcopy(paralist)
 	for i in range(1, len(spath.path)):
 		newparalist = copy.deepcopy(buildparalist(context, trans[i-1], i, newparalist))
-		print newparalist
+		#print newparalist
 		ineqs += [locationfedtoineqs(spath.path[i].federation, newparalist)]
 	for i, ineq in zip(range(0, len(ineqs)), ineqs):
 		if i == len(ineqs) - 1:
 			dineqs = dineqs + ineq
 			return dineqs
 		dineqs = dineqs + ineq + ' and '
+
+def inboundineq(spath, observation):
+	length = len(spath.path)
+	temp = ''
+	for i in range(1, length+1):
+		if i == length:
+			temp = temp + 't_' + str(i)
+		else:
+			temp = temp + 't_' + str(i) + ' + '
+	temp = '(' + str(observation.lb)+'<='+temp +'<='+str(observation.ub)+ ')'
+	return temp
+
+def nonnegative(spath, context):
+	length = len(spath.path)
+	nonnega = []
+	ineq = ''
+	clocknum = len(context.clocks)
+	for i in range(0, clocknum):
+		temp = '('+ context.clocks[i].name + '>=0'+')'
+		nonnega += [temp]
+	for i in range(0, length+1):
+		temp = '('+'t_' + str(i) + '>=0'+')'
+		nonnega += [temp]
+	for i in range(0, len(nonnega)):
+		if i == len(nonnega)-1:
+			ineq = ineq + nonnega[i]
+		else:
+			ineq = ineq + nonnega[i] + ' and '
+	return ineq
+
+def potentialpathineqs(context, observation, spath, transitions):
+	dineqs = durationineqs(context, spath, transitions)
+	bineq = inboundineq(spath, observation)
+	nineqs = nonnegative(spath, context)
+	return '(' + dineqs + ' and ' + bineq + ' and ' + nineqs + ')'
 
 def main():
 	start = time.clock()
@@ -115,7 +150,7 @@ def main():
 	newparalist = buildparalist(v, trans[0], 1, paralist)
 	print newparalist
 	print locationfedtoineqs(spath.path[1].federation, newparalist)"""
-	print durationineqs(v, spath, templates[0].transitions)
+	print potentialpathineqs(v, ointerval, spath, templates[0].transitions)
 
 if __name__ == '__main__':
 	main()

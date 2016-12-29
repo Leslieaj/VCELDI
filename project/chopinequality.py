@@ -16,10 +16,14 @@ def chopcondition(spath, chopnum, ldis):
 	ineqsstr = ''
 	locatechops(chopnum,pathlen,cctemp,chopconditions)
 	for chopcond in chopconditions:
+		#print chopcond
 		LDFsineqs = Ldfinequations(chopcond, spath.path, ldis)
 		TDineqs = TDinequations(chopcond)
 		ADDineqs = ADDinequations(chopcond)
-		conditionineqs.append('('+LDFsineqs+' and '+TDineqs+' and '+ADDineqs+')')
+		if ADDineqs != None:
+			conditionineqs.append('('+LDFsineqs+' and '+TDineqs+' and '+ADDineqs+')')
+		else:
+			conditionineqs.append('('+LDFsineqs+' and '+TDineqs+')')
 	for i, ineqs in zip(range(0, len(conditionineqs)), conditionineqs):
 		if i == len(conditionineqs)-1:
 			ineqsstr = ineqsstr + ineqs
@@ -42,6 +46,7 @@ def Ldfinequations(chopcond, path, ldis):
 							symbolcl.adddvalue(slocation.getsymbol())
 						else:
 							symbolcl.adddvalue('m_'+str(i+1))
+			#print symbolcl.dvalue
 			ldfineqs.append(ldftoineq(symbolcls, ldi.bound))
 		elif i > 0 and i < len(fragments)-1:
 			symbolcls = []
@@ -98,6 +103,8 @@ def ldftoineq(symbolcls, mbound):
 				temp = temp + symbolcl.getcodvalue() + '+'
 	if temp !='':
 		temp = temp + '<=' + mbound
+	#else:
+		#temp = '0<='+mbound
 	return temp
 
 def splitpath(chopcond, path):
@@ -114,7 +121,7 @@ def TDinequations(chopcond):
 	td = []
 	tdineqs = ''
 	for i, chop in zip(range(0,len(chopcond)), chopcond):
-		temp = '0<='+'m_'+str(i+1)+'<='+'t'+str(chop)
+		temp = '('+'0<='+'m_'+str(i+1)+'<='+'t_'+str(chop)+')'
 		td.append(temp)
 	for i, ineqs in zip(range(0, len(td)), td):
 		if i == len(td)-1:
@@ -128,8 +135,10 @@ def ADDinequations(chopcond):
 	addineqs = ''
 	for i in range(1, len(chopcond)):
 		if chopcond[i] == chopcond[i-1]:
-			temp = '('+'m_'+str(i-1)+'<='+'m_'+str(i)+')'
+			temp = '('+'m_'+str(i-1+1)+'<='+'m_'+str(i+1)+')'
 			add.append(temp)
+	if len(add) == 0:
+		return None
 	for i, ineqs in zip(range(0, len(add)), add):
 		if i == len(add)-1:
 			addineqs = addineqs + ineqs
@@ -188,8 +197,13 @@ def main():
 	chopnum = 2
 	eldi = '[10,20] # ( [2, id0] + [-3, id1] <= 10) ; ([-4, id1] + [6, id0] <= -7); ([2, id2] <= 0)'
 	observation, ldis = parseEldi(eldi.strip())
-	print chopcondition(spath, chopnum, ldis)
-	#print buildexist(chopnum, '(kkkk) or (bbbb)')
+	"""for ldi in ldis:
+		print ldi.ldistr
+		for cl in ldi.coefficientlocations:
+			print '(' + cl.coefficient + ',' + cl.location + ')' """
+	chopineqsstr = chopcondition(spath, chopnum, ldis)
+	exist = buildexist(chopnum, chopineqsstr)
+	print exist
 
 if __name__=='__main__':
 	main()

@@ -8,17 +8,17 @@ class Coefficientlocation:
 		self.dvalue.append(dvaluestr)
 	def getdvalue(self):
 		if len(self.dvalue) == 0:
-			return None
+			return '0'
 		temp = ''
 		for i, dvaluestr in zip(range(0,len(self.dvalue)), self.dvalue):
-			if i != len(self.dvalue) - 1:
-				temp = temp + dvaluestr + '+'
-			else:
+			if i == len(self.dvalue) - 1:
 				temp = temp + dvaluestr
-		return temp
+				return temp
+			else:
+				temp = temp + dvaluestr + '+'
 	def getcodvalue(self):
-		if len(self.dvalue) == 0:
-			return None
+		#if len(self.dvalue) == 0:
+			#return None
 		temp = self.getdvalue()
 		return '('+self.coefficient+')' + '*'+'('+temp+')'
 
@@ -54,6 +54,16 @@ def parseELDF(Eldf,operation):
 		ldistr = ldistr.replace('(','').replace(')','')
 		ldis += [Ldi(ldistr)]
 	return ldis
+
+def parseELDI(eldifile):
+	file_object = open(eldifile)
+	eldi = ''
+	try:
+		eldi = file_object.readlines()
+	finally:
+		file_object.close()
+	#print eldi
+	return parseEldi(eldi[0].strip())
 
 def main():
 	file_object = open('eldi.txt')
