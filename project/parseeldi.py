@@ -7,17 +7,17 @@ class Coefficientlocation:
 	def adddvalue(self, dvaluestr):
 		self.dvalue.append(dvaluestr)
 	def getdvalue(self):
-		if len(dvalue) == 0:
+		if len(self.dvalue) == 0:
 			return None
 		temp = ''
-		for i, dvaluestr in zip(range(0,len(dvalue)), dvalue):
-			if i != len(dvalue) - 1:
+		for i, dvaluestr in zip(range(0,len(self.dvalue)), self.dvalue):
+			if i != len(self.dvalue) - 1:
 				temp = temp + dvaluestr + '+'
 			else:
 				temp = temp + dvaluestr
 		return temp
 	def getcodvalue(self):
-		if len(dvalue) == 0:
+		if len(self.dvalue) == 0:
 			return None
 		temp = self.getdvalue()
 		return '('+self.coefficient+')' + '*'+'('+temp+')'

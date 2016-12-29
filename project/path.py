@@ -171,7 +171,7 @@ def dealwithfirstlocation(ppath, initzone, ointerval, template, paths):
 		paths.append(copypathsequence(ppath))
 	else:
 		newtlow = newtlow - tup
-	print newtlow
+	#print newtlow
 	newointerval = Observationinterval(newtlow,ointerval.getub(),ointerval.context)
 	nextzone = []
 	while plocation.hasnexttran():

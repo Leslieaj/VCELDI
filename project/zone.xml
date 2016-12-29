@@ -35,7 +35,7 @@ clock x,y;</declaration>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id1"/>
-			<label kind="guard" x="-169" y="-119">y&gt;=5</label>
+			<label kind="guard" x="-169" y="-119">y&gt;=7</label>
 			<label kind="assignment" x="-144" y="-85">y=0</label>
 		</transition>
 	</template>
