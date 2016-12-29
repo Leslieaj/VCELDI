@@ -59,16 +59,19 @@ def main():
 			exist = buildexist(chopnum, chopineqsstr)
 			durationineqsstr = potentialpathineqs(v, ointerval, spath, templates[0].transitions)
 			qdla = buildforall(v, len(allpaths[0][0].path), durationineqsstr, exist)
-			qdlas +=[str(i) + ': '+qdla]
-			print str(i) + ': '+qdla
+			qdlas +=['phi'+ str(i) + ' := '+qdla]
+			print 'phi'+ str(i) + ' := '+qdla
 	f = open('qdlaresult.txt','w+')
 	f.truncate()
-	for qdla in qdlas:
+	f.write('rlset r$\n')
+	for i, qdla in zip(range(1, len(qdlas)+1),qdlas):
 		f.write(qdla)
+		temp = 'rlqe ' + 'phi' + str(i) + ';'
+		f.write(temp+'\n')
+	f.write('showtime;')
 	f.close()
 	end = time.clock()
 	print end-start
-	return True
 
 if __name__=='__main__':
 	main()
