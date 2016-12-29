@@ -65,7 +65,11 @@ def main():
 	f.truncate()
 	f.write('rlset r$\n')
 	for i, qdla in zip(range(1, len(qdlas)+1),qdlas):
+		outterminator = 'out t;'
+		f.write(outterminator+'\n')
 		f.write(qdla)
+		outfile = 'out result;'
+		f.write(outfile+'\n')
 		temp = 'rlqe ' + 'phi' + str(i) + ';'
 		f.write(temp+'\n')
 	f.write('showtime;')
