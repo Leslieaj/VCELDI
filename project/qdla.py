@@ -31,7 +31,7 @@ def main():
 	start = time.clock()
 	ntaxml = init(sys.argv[1])
 	eldifile = sys.argv[2]
-	print isinstance(eldifile, str)
+	#print isinstance(eldifile, str)
 	templates = parseXML(ntaxml)
 	v = Context(['x', 'y', 't'], 'v')
 	ceil={v.x:10,v.y:20, v.t:100}
