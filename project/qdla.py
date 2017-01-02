@@ -58,7 +58,7 @@ def main():
 			chopineqsstr = chopcondition(spath, chopnum, ldis)
 			exist = buildexist(chopnum, chopineqsstr)
 			durationineqsstr = potentialpathineqs(v, ointerval, spath, templates[0].transitions)
-			qdla = buildforall(v, len(allpaths[0][0].path), durationineqsstr, exist)
+			qdla = buildforall(v, len(sp.path), durationineqsstr, exist)
 			qdlas +=['phi'+ str(i) + ' := '+qdla]
 			print 'phi'+ str(i) + ' := '+qdla
 	f = open('qdlaresult.txt','w+')

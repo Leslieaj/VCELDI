@@ -29,6 +29,10 @@ def locationfedtoineqs(fed, paralist):
 
 def buildparalist(context, tran, index, paralist):
 	newparalist = copy.deepcopy(paralist)
+	if tran.assignment == None:
+		for clock in context.clocks:
+			newparalist[context.name+'.'+clock.name] = newparalist[context.name+'.'+clock.name] + '+' + 't_'+str(index+1)
+		return newparalist
 	assignment = tran.assignment.replace(' ','')
 	assignments = assignment.split(',')
 	if index == 1:
