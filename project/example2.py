@@ -82,6 +82,8 @@ def main():
 			qdla = buildforall(v, len(sp.path), durationineqsstr, exist)
 			qdlas +=['phi'+ str(i) + ' := '+qdla]
 			print 'phi'+ str(i) + ' := '+qdla
+	end = time.clock()
+	print end-start
 	f = open(eldifile.rstrip('.txt')+'result.txt','w+')
 	f.truncate()
 	f.write('rlset r$\n')
@@ -95,8 +97,7 @@ def main():
 		f.write(temp+'\n')
 	f.write('showtime;')
 	f.close()
-	end = time.clock()
-	print end-start
+
 
 if __name__ == '__main__':
 	main()
