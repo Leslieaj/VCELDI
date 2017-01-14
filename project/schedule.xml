@@ -4,39 +4,37 @@
 	<declaration>// Place global declarations here.
 //clock t;</declaration>
 	<template>
-		<name x="5" y="5">A</name>
+		<name>A</name>
 		<declaration>// Place local declarations here.
 clock x,y;</declaration>
-		<location id="id0" x="110" y="-76">
-			<name x="100" y="-110">i</name>
-			<label kind="invariant" x="100" y="-59">x&lt;=5</label>
+		<location id="id2">
+			<name>i</name>
+			<label kind="invariant">x&lt;=5</label>
 		</location>
-		<location id="id1" x="-51" y="-76">
-			<name x="-61" y="-110">runA</name>
-			<label kind="invariant" x="-60" y="-59">y&lt;=2</label>
+		<location id="id1">
+			<name>runA</name>
+			<label kind="invariant">y&lt;=2</label>
 		</location>
-		<location id="id2" x="-187" y="-76">
-			<name x="-197" y="-110">r</name>
-			<label kind="invariant" x="-197" y="-59">y&lt;=3</label>
+		<location id="id0">
+			<name>r</name>
+			<label kind="invariant">y&lt;=3</label>
 		</location>
-		<init ref="id2"/>
+		<init ref="id0"/>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id2"/>
-			<label kind="guard" x="-51" y="-186">x==5</label>
-			<label kind="assignment" x="-60" y="-161">x=0,y=0</label>
-			<nail x="110" y="-161"/>
-			<nail x="-187" y="-161"/>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard">x==5</label>
+			<label kind="assignment">x=0,y=0</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
-			<target ref="id0"/>
-			<label kind="guard" x="8" y="-93">y==2</label>
+			<target ref="id2"/>
+			<label kind="guard">y==2</label>
 		</transition>
 		<transition>
-			<source ref="id2"/>
+			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="assignment" x="-136" y="-76">y=0</label>
+			<label kind="assignment">y=0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.

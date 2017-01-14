@@ -1,0 +1,40 @@
+<nta>
+	<template>
+		<name>A</name>
+		<declaration>// Place local declarations here.
+clock x,y;</declaration>
+		<location id="id2">
+			<name>i</name>
+			<label kind="invariant">x&lt;=5</label>
+		</location>
+		<location id="id1">
+			<name>runA</name>
+			<label kind="invariant">y&lt;=2</label>
+		</location>
+		<location id="id0">
+			<name>r</name>
+			<label kind="invariant">y&lt;=3</label>
+		</location>
+		<init ref="id0" />
+		<transition>
+			<source ref="id2" />
+			<target ref="id0" />
+			<label kind="guard">x==5</label>
+			<label kind="assignment">x=0,y=0</label>
+		</transition>
+		<transition>
+			<source ref="id1" />
+			<target ref="id2" />
+			<label kind="guard">y==2</label>
+		</transition>
+		<transition>
+			<source ref="id0" />
+			<target ref="id1" />
+			<label kind="assignment">y=0</label>
+		</transition>
+	</template>
+	<system>
+	</system>
+	<queries>
+	</queries>
+</nta>
