@@ -247,6 +247,7 @@ clock x, y;</declaration>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id18"/>
+			<label kind="guard" x="59" y="-229">y&lt;=10&amp;&amp;y&gt;=10</label>
 			<label kind="assignment" x="85" y="-204">y=0</label>
 		</transition>
 		<transition>

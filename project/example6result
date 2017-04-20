@@ -117,8 +117,6 @@ true
 
 true
 
-true
-
 false
 
 false
@@ -713,6 +711,6 @@ false
 
 false
 
-Time: 1470 ms  plus GC time: 380 ms
+Time: 1550 ms  plus GC time: 410 ms
 
 *** End-of-file read 
