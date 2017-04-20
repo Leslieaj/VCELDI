@@ -87,7 +87,7 @@ def e6Ldfinequations(chopcond, path, ldis):
 				symbolcl.adddvalue(slocation.getsymbol())
 				#else:
 					#symbolcl.adddvalue('m_'+str(1))
-	ldfineqs.append(ldftoineq(symbolcls, ldi.bound))
+	ldfineqs.append(ldftoineq(symbolcls, ldiand.bound))
 	return ldfstoineqs(ldfineqs)
 
 def e6chopcondition(spath, chopnum, ldis):
