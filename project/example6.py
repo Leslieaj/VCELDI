@@ -72,7 +72,10 @@ def e6Ldfinequations(chopcond, path, ldis):
 			for slocation in fragments[i]:
 				if slocation.location == symbolcl.location:
 					if slocation.index == chopcond[0]:
-						symbolcl.adddvalue(slocation.getsymbol()+'-'+'m_'+str(1))
+						if i == 0 :
+							symbolcl.adddvalue('m_'+str(1))
+						if i == 1 :
+							symbolcl.adddvalue(slocation.getsymbol()+'-'+'m_'+str(1))
 					else:
 						symbolcl.adddvalue(slocation.getsymbol())
 		ldfineqs.append(ldftoineq(symbolcls, ldi.bound))

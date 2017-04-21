@@ -28,10 +28,12 @@ class Ldi:
 		self.coefficientlocations = self.getclocation() or []
 		self.bound = self.getbound()
 	def getbound(self):
-		temp = self.ldistr.split('<=')
-		return temp[-1]
+		tempbound = self.ldistr.split('<')
+		temp = tempbound[-1]
+		bound = temp.split('=')
+		return bound[-1]
 	def getclocation(self):
-		temp = self.ldistr.split('<=')
+		temp = self.ldistr.split('<')
 		cltemps = temp[0].split('+')
 		clsequence = []
 		for cl in cltemps:
@@ -76,7 +78,7 @@ def main():
 	observation, ldis = parseEldi(eldi[0].strip())
 	print observation
 	for ldi in ldis:
-		print ldi.ldistr
+		print ldi.ldistr, ldi.bound
 		for cl in ldi.coefficientlocations:
 			print '(' + cl.coefficient + ',' + cl.location + ')'
 	
