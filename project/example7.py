@@ -46,6 +46,7 @@ def e7Ldfinequations(chopcond, path, ldis):
 			tempcl = Coefficientlocation(cl.coefficient, cl.location)
 			symbolcls.append(tempcl)
 		for symbolcl in symbolcls:
+			#print 0 if i < 2 else -1
 			for slocation in fragments[0 if i < 2 else -1]:
 				if slocation.location == symbolcl.location:
 					if slocation.index == chopcond[0]:
