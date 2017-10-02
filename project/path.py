@@ -91,8 +91,8 @@ def ininterval(fed, intervalfed):
 	
 def forward(ppath, plocation, transitions, context):
 	targetzone = None
-	if plocation.hasnexttran():
-		tranid = plocation.hasnexttran()
+	tranid = plocation.hasnexttran()
+	if tranid:
 		plocation.selecttran(tranid)
 		for tran in transitions:
 			if tran.id == tranid:
@@ -113,8 +113,8 @@ def forward(ppath, plocation, transitions, context):
 	return targetzone
 
 def backward(ppath, transitions, context):
-	if len(ppath.path)==1:
-		return None
+	#if len(ppath.path)==1:
+		#return None
 
 	del ppath.path[-1]
 
@@ -152,7 +152,17 @@ def findallpath(enter, ointerval, template):
 		else:
 			for zone in nextzone:
 				findpath(ppath, zone, newointerval,template, paths)
+
 		#findpath(ppath, ppath.initzone, ointerval,template, paths)
+		allpaths += [paths]
+	return allpaths
+
+def findallpath2(enter, ointerval, template):
+	allpaths = []
+	for z in enter:
+		paths = []
+		ppath = Potentialpath(z)
+		findpath2(ppath, ppath.initzone, ointerval,template, paths)
 		allpaths += [paths]
 	return allpaths
 
@@ -231,21 +241,114 @@ def findpath(ppath, zone, ointerval, template, paths):
 		#return
 	return
 
+def findpath2(ppath, zone, ointerval, template, paths):
+	initzone = zone
+	if initzone is None :
+		return
+	
+	location = findlocationbyid(initzone.location, template.locations)
+	plocation = PLocation(location, len(ppath.path), initzone.federation)
+	ppath.addPlocation(plocation)
+	#plocation.federation = stayinlocation(plocation, ointerval.context)
+	#plocation.index = plocation.index + 1
+	#ppath.addPlocation(plocation)
+	
+	while len(ppath.path) != 0 :
+		currentz = ppath.path[-1]
+		del ppath.path[-1]
+		tempfed = stayinlocation(currentz, ointerval.context)
+		if ininterval(tempfed, ointerval.getOInterval()):
+			currentz.federation = stayinlocation(currentz, ointerval.context)
+			currentz.index = len(ppath.path) + 1
+			ppath.addPlocation(currentz)
+			paths.append(copypathsequence(ppath))
+			targetzone = None
+			while targetzone is None :
+				tranid = currentz.hasnexttran()
+				if tranid == False:
+					break
+				else:
+					currentz.selecttran(tranid)
+					for tran in template.transitions:
+						if tran.id == tranid:
+							targetlocation = tran.target
+							targetfed = None
+							if tran.guard != None:
+								targetfed = currentz.federation & guardtofed(ointerval.context, tran.guard)
+							else:
+								targetfed = currentz.federation 
+							if tran.assignment != None:
+								targetfed = assignmenttofed(ointerval.context, tran.assignment, targetfed)
+							if not targetfed.isEmpty() :
+								targetzone = Zone(targetlocation, targetfed)
+								break
+			if targetzone is not None:
+				locationtemp = findlocationbyid(targetzone.location, template.locations)
+				plocationtemp = PLocation(locationtemp, len(ppath.path), targetzone.federation)
+				ppath.addPlocation(plocationtemp)
+				
+		elif lessthanlb(tempfed,ointerval.getlow()):
+			currentz.federation = stayinlocation(currentz, ointerval.context)
+			currentz.index = len(ppath.path) + 1
+			ppath.addPlocation(currentz)
+			#paths.append(copypathsequence(ppath))
+			targetzone = None
+			while targetzone is None :
+				tranid = currentz.hasnexttran()
+				if tranid == False:
+					break
+				else:
+					currentz.selecttran(tranid)
+					for tran in template.transitions:
+						if tran.id == tranid:
+							targetlocation = tran.target
+							targetfed = None
+							if tran.guard != None:
+								targetfed = currentz.federation & guardtofed(ointerval.context, tran.guard)
+							else:
+								targetfed = currentz.federation 
+							if tran.assignment != None:
+								targetfed = assignmenttofed(ointerval.context, tran.assignment, targetfed)
+							if not targetfed.isEmpty() :
+								targetzone = Zone(targetlocation, targetfed)
+			if targetzone is not None:
+				locationtemp = findlocationbyid(targetzone.location, template.locations)
+				plocationtemp = PLocation(locationtemp, len(ppath.path), targetzone.federation)
+				ppath.addPlocation(plocationtemp)
+		elif greaterthanub(tempfed,ointerval.getup()):
+			currentz.federation = stayinlocation(currentz, ointerval.context)
+			currentz.index = len(ppath.path) + 1
+			ppath.addPlocation(currentz)
+			#paths.append(copypathsequence(ppath))
+			del ppath.path[-1]
+		while len(ppath.path) > 0 :
+			last = ppath.path[-1]
+			if last.hasnexttran() == False:
+				del ppath.path[-1]
+			else:
+				break
+
 def main():
 	start = time.clock()
 	ntaxml = init(sys.argv[1])
+	#ntaxml = init('zone.xml')
 	templates = parseXML(ntaxml)
 	"""v = Context(['x', 'y', 't'], 'v')
 	ceil={v.x:10,v.y:20, v.t:100}
 	bgf = v.getZeroFederation()
 	beginzone =  Zone('id2', bgf)"""
-	v = Context(['x', 'y', 'z', 't'], 'v')
-	ceil = {v.x:3, v.y:4, v.z:2, v.t:100}
+	#v = Context(['x', 'y', 'z', 't'], 'v')
+	#ceil = {v.x:3, v.y:4, v.z:2, v.t:100}
+	#bgf = v.getZeroFederation()
+	#beginzone =  Zone('id9', bgf)
+	v = Context(['x', 'y', 't'], 'v')
+	ceil = {v.x:15, v.y:10, v.t:40}
 	bgf = v.getZeroFederation()
-	beginzone =  Zone('id9', bgf)
+	beginzone =  Zone('id57', bgf)
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
-	ointerval = Observationinterval(15,17,v)
-	allpaths = findallpath(enter,ointerval,templates[0])
+	#ointerval = Observationinterval(15,17,v)
+	ointerval = Observationinterval(36,40,v)
+	allpaths = findallpath2(enter,ointerval,templates[0])
 	end = time.clock()
 	print end-start
 	pathnum = 0

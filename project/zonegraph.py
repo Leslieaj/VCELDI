@@ -70,21 +70,25 @@ def main():
 	start = time.clock()
 	ntaxml = init(sys.argv[1])
 	templates = parseXML(ntaxml)
-	#v = Context(['x', 'y', 't'], 'v')
-	v = Context(['x', 'y', 'z', 't'], 'v')
-	#ceil={v.x:10,v.y:20, v.t:100}
-	ceil = {v.x:3, v.y:4, v.z:2, v.t:100}
+	v = Context(['x', 'y', 't'], 'v')
+	#v = Context(['x', 'y', 'z', 't'], 'v')
+	ceil={v.x:15,v.y:10, v.t:100}
+	#ceil = {v.x:3, v.y:4, v.z:2, v.t:100}
 	bgf = v.getZeroFederation()
-	#beginzone =  Zone('id2', bgf)
-	beginzone =  Zone('id9', bgf)
+	print bgf
+	beginzone =  Zone('id57', bgf)
+	#beginzone =  Zone('id9', bgf)
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
 	end = time.clock()
 	print end-start
 	for i in iter(zones):
-		print i.location, i.federation
-	#for j in iter(enter):
-		#print j.location, j.federation
-	
+		if i.location == 'id57':
+			print i.location, i.federation
+	for j in iter(enter):
+		if j.location == 'id57':
+			print j.location, j.federation
+#print len(enter)
+#print len(zones)
 if __name__=='__main__':
 	main()
 
