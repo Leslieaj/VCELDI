@@ -75,7 +75,7 @@ def main():
 	ceil={v.x:15,v.y:10, v.t:100}
 	#ceil = {v.x:3, v.y:4, v.z:2, v.t:100}
 	bgf = v.getZeroFederation()
-	print bgf
+	#print bgf
 	beginzone =  Zone('id57', bgf)
 	#beginzone =  Zone('id9', bgf)
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
@@ -87,8 +87,8 @@ def main():
 	for j in iter(enter):
 		if j.location == 'id57':
 			print j.location, j.federation
-#print len(enter)
-#print len(zones)
+	print len(enter)
+	print len(zones)
 if __name__=='__main__':
 	main()
 
