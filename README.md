@@ -47,12 +47,12 @@ Then we call REDLOG to solve the QLRA formulas :
   ```shell
   > python splitfile.py
   ```
-
-* After spliting, we can call REDLOG:
+  After spliting, we can call REDLOG:
 
   ```shell
   > python run.py
   ```
+
 
 
 
