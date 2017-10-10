@@ -3,7 +3,7 @@
 
 #### Basic information
 
-It's a prototype tool to verify continuous-time ELDIs formulas againt Timed Automata (TA). We say "bounded", means that the observation interval length is bounded by $ [b,e] $. It's based on [PyDBM](http://people.cs.aau.dk/~adavid/UDBM/python.html) which is a Python binding to [UPPAAL DBM Library](http://people.cs.aau.dk/~adavid/UDBM/index.html).
+It's a prototype tool to verify continuous-time ELDIs formulas againt Timed Automata (TA). We say "bounded", means that the observation interval length is bounded by $$ [b,e] $$. It's based on [PyDBM](http://people.cs.aau.dk/~adavid/UDBM/python.html) which is a Python binding to [UPPAAL DBM Library](http://people.cs.aau.dk/~adavid/UDBM/index.html).
 
 #### Using under Linux
 
@@ -27,9 +27,9 @@ There are nine examples (example1~example9). We can run it as:
 ```
 
 * "X" : 1~9.
-* "exampleX.xml" is the model file of TA in UPPAAL. "exampleX.txt" is ELDIs formula file.
-* Specially, for example2~example5, they share the script file "example2.py".
-* After running, it will generate a file "exampleXresult.txt" which stores the Quantified Linear Real Arithmetic (QLRA) formulas. It will take long time to generate "example9result.txt".
+* __"exampleX.xml"__ is the model file of TA in UPPAAL. __"exampleX.txt"__ is ELDIs formula file.
+* Specially, for __example2~example5__, they share the script file __"example2.py"__.
+* After running, it will generate a file __"exampleXresult.txt"__ which stores the Quantified Linear Real Arithmetic (QLRA) formulas. _It will take long time to generate "example9result.txt"_.
 
 
 Then we call REDLOG to solve the QLRA formulas :
@@ -40,9 +40,9 @@ Then we call REDLOG to solve the QLRA formulas :
 
 * "reduce" is the execution file of REDLOG.
 
-* It will generate a file "exampleXresult" which stores the results for each QLRA formula.
+* It will generate a file __"exampleXresult"__ which stores the results for each QLRA formula.
 
-* Specially, for example9, its scale is too large that "example9result.txt" will be 3.1GB. We need to splite the file. We can use the scripts in folder "splitfiles":
+* Specially, for example9, its scale is too large that "example9result.txt" will be 3.1GB. We need to splite the file. We can use the scripts in folder __"splitfiles"__:
 
   ```shell
   > python splitfile.py
