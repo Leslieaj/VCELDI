@@ -113,8 +113,8 @@ def forward(ppath, plocation, transitions, context):
 	return targetzone
 
 def backward(ppath, transitions, context):
-	#if len(ppath.path)==1:
-		#return None
+	if len(ppath.path)==1:
+		return None
 
 	del ppath.path[-1]
 
