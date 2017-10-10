@@ -1,7 +1,7 @@
 # VCELDI
 ### Bounded verifying continuous-time Extended Linear Duration Invariants
 
-####Basic information
+#### Basic information
 
 It's a prototype tool to verify continuous-time ELDIs formulas againt Timed Automata (TA). We say "bounded", means that the observation interval length is bounded by $[b,e]$. It's based on [PyDBM](http://people.cs.aau.dk/~adavid/UDBM/python.html) which is a Python binding to [UPPAAL DBM Library](http://people.cs.aau.dk/~adavid/UDBM/index.html).
 
