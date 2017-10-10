@@ -1,5 +1,5 @@
 # VCELDI
-### Bounded verifying continuous-time Extended Linear Duration Invariants
+### Bounded Model Checking Continuous-time Extended Linear Duration Invariants
 
 #### Basic information
 
