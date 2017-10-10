@@ -35,7 +35,7 @@ There are nine examples (example1~example9). We can run it as:
 Then we call REDLOG to solve the QLRA formulas :
 
 ```shell
-> ./reduce exmapleXresult.txt
+> ./reduce exampleXresult.txt
 ```
 
 * "reduce" is the execution file of REDLOG.
