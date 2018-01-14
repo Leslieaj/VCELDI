@@ -58,10 +58,10 @@ def main():
 	v = Context(['x', 't'], 'v')
 	ceil = {v.x:1, v.t:100}
 	bgf = v.getZeroFederation()
-	beginzone =  Zone('id11', bgf)
+	#beginzone =  Zone('id11', bgf)
 	#beginzone =  Zone('id15', bgf)
 	#beginzone =  Zone('id19', bgf)
-	#beginzone =  Zone('id23', bgf)
+	beginzone =  Zone('id23', bgf)
 	zones,enter = getzones(v,beginzone,templates[0],ceil)
 	observation, ldi = parseexampleELDI(eldifile)
 	observation = observation.replace('[','').replace(']','').replace(' ','')
